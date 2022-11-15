@@ -36,4 +36,10 @@ public interface GameInterface {
     CardDeck[] getDecks();
 
     void setDecks(CardDeck[] decks);
+
+    public void setNumberOfPlayers(int numberOfPlayers);
+
+    public Player[] getPlayers();
+
+    public void setPlayers(Player[] players);
 }
