@@ -6,18 +6,30 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
+/**
+ * Class containing the methods to test the Game class
+ */
 public class GameTest {
 
     GameInterface myTestGame1;
     GameInterface myTestGame2;
     static File cards1, cards2, cards3, cards4;
 
+    /**
+     * Creates 4 different files, 3 of them containing errors and the last one correctly formatted
+     * to test the Game class
+     * @throws IOException
+     */
     @BeforeClass
-    public static void createFIle() throws IOException {
+    public static void createFile() throws IOException {
 
+        /*
+        First file
+         */
         cards1 = new File("cards1.txt");
         try {
             cards1.createNewFile();
@@ -26,15 +38,16 @@ public class GameTest {
             e.printStackTrace();
         }
 
-        //Let's fill this File with numbers, and we will also place inside the file a wrong format to check if the method recognizes it
         Writer writeFile1 = new FileWriter(cards1);
-        String sequence = "1\n5\ng\n9\n";   //note that g is a wrong format
+        String sequence = "1\n5\ng\n9\n";   //g is a wrong format
         for (int i = 0; i < 6; i++){
             writeFile1.write(sequence);
         }
         writeFile1.close();
 
-        //we need another file to check if the function recognizes negative values
+        /*
+        Second file
+         */
         cards2 = new File("cards2.txt");
         try {
             cards2.createNewFile();
@@ -44,13 +57,15 @@ public class GameTest {
         }
 
         Writer writeFile2 = new FileWriter(cards2);
-        sequence = "1\n5\n-22\n9\n";   //note that -22 is negative
+        sequence = "1\n5\n-22\n9\n";   //-22 is negative
         for (int i = 0; i < 6; i++){
             writeFile2.write(sequence);
         }
         writeFile2.close();
 
-        //We need another file with all the correct formats for the cards, but with less cards than the required number
+        /*
+        Third file
+         */
         cards3 = new File("cards3.txt");
         try {
             cards3.createNewFile();
@@ -60,13 +75,15 @@ public class GameTest {
         }
 
         Writer writeFile3 = new FileWriter(cards3);
-        sequence = "1\n5\n22\n";   //right format, 18 cards total
+        sequence = "1\n5\n22\n";        //right format but only 18 cards
         for (int i = 0; i < 6; i++){
             writeFile3.write(sequence);
         }
         writeFile3.close();
 
-        //Finally, we need a correct file as input
+        /*
+        Fourth file
+         */
         cards4 = new File("cards4.txt");
         try {
             cards4.createNewFile();
@@ -76,7 +93,7 @@ public class GameTest {
         }
 
         Writer writeFile4 = new FileWriter(cards4);
-        sequence = "1\n5\n22\n9\n";   //24 cards total so 3 players
+        sequence = "1\n5\n22\n9\n";         //Correct format and 24 cards (3 players)
         for (int i = 0; i < 6; i++){
             writeFile4.write(sequence);
         }
@@ -84,6 +101,9 @@ public class GameTest {
 
     }
 
+    /**
+     * Creates and sets up the main fields of Game objects to test
+     */
     @Before
     public void createTwoNewGames(){
 
@@ -125,101 +145,130 @@ public class GameTest {
         myTestGame2.setNumberOfPlayers(2);
     }
 
+    /**
+     * Tests the user's input for the number of players
+     */
     @Test
     public void testAskNumberOfPlayers(){
 
-        //Let's test the input with multiple examples, both correct and wrong
-        String numberOfPlayerInput = "tt\n7\nC5\n";
-        //We create an inputStream to simulate the standard input of the user
+        String numberOfPlayerInput = "tt\n7\nC5\n";     //String containing the user's inputs (correct and wrong)
+
+        /*
+        Sets the standard input and output to be ByteArrays (memory areas)
+         */
         ByteArrayInputStream inputStream = new ByteArrayInputStream(numberOfPlayerInput.getBytes());
-        //Save the reference to the standard input
-        InputStream stdin = System.in;
+        InputStream stdin = System.in;      //Backup of the standard input
         System.setIn(inputStream);
 
-        //We also need to modify the standard output of the program
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
-        PrintStream stdout = System.out;
+        PrintStream stdout = System.out;       //Backup of the standard output
         System.setOut(printStream);
 
-        //Now we can call the method to be tested, it will run as usual, but the standard input and output of the program have been modified
+        /*
+        Calls the method to be tested from the Game class
+         */
         Game testGame = new Game();
+        testGame.setScanner(new Scanner(System.in));
         testGame.askNumberOfPlayers();
 
-        //Now we can check if the output is correct
+        /*
+        Working on the output stream, checks if the program accepted the number 7 as a correct input
+         */
         String resultingString = outputStream.toString();
-        System.out.println(resultingString);
-        //We only need the last print of the entire method, so we can extract it
         int index = resultingString.indexOf("The game");
         resultingString = resultingString.substring(index);
-        //We can now split the string into words
-        String[] splitResultingString = resultingString.split(" ");
+        String[] splitResultingString = resultingString.split(" ");     //Splits the string into words
         assertEquals("The initial method to get the user's input for the number of players " +
-                "is not working properly", "7", splitResultingString[4]);
+                "is not working properly", "7", splitResultingString[4]);       //The 5th word in the array is the number of players
 
-        //We set back the standard input and output
+        /*
+        Restores the standard input and output to keyboard and display
+         */
         System.setOut(stdout);
         System.setIn(stdin);
     }
 
+    /**
+     * Tests the user's input for the file name
+     */
     @Test
     public void testAskFileName(){
 
-        //Let's test the input with multiple examples, both correct and wrong
-        String numberOfPlayerInput = "Rome\ntt\ncards1.txt\nC5\n";
-        //We create an inputStream to simulate the standard input of the user
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(numberOfPlayerInput.getBytes());
-        //Save the reference to the standard input
-        InputStream stdin = System.in;
-        System.setIn(inputStream);
+        String numberOfPlayerInput = "Rome\ntt\ncards1.txt\nC5\n";      //String with the possible user's inputs (correct and wrong)
 
-        //We also need to modify the standard output of the program
+        /*
+        Modifies the standard input and output to control the inputs and the outputs of the method to test
+         */
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(numberOfPlayerInput.getBytes());
+        InputStream stdin = System.in;      //Backup of the standard input
+        System.setIn(inputStream);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
-        PrintStream stdout = System.out;
+        PrintStream stdout = System.out;    //Backup of the standard output
         System.setOut(printStream);
 
-        //Now we can call the method to be tested, it will run as usual, but the standard input and output of the program have been modified
+        /*
+        Calls the method to be tested in the Game class
+         */
         Game testGame = new Game();
+        testGame.setScanner(new Scanner(System.in));
         testGame.askFileName();
 
-        //Now we can check if the output is correct
+        /*
+        Manipulates the output string generated by the method to check if the "cards.txt" file was the one accepted as the input file
+         */
         String resultingString = outputStream.toString();
-        //We only need the last print of the entire method, so we can extract it
         int index = resultingString.indexOf("Selected");
         resultingString = resultingString.substring(index);
-        //We can now split the string into words
-        String[] splitResultingString = resultingString.split(" ");
+        String[] splitResultingString = resultingString.split(" ");     //Splits the string into words
         assertEquals("The initial method to get the user's input for the textfile" +
                 " is not working properly", "cards1.txt", splitResultingString[2].strip());
 
-        //We set back the standard input and output
+        /*
+        Restores the standard input and output to keyboard and display
+         */
         System.setIn(stdin);
         System.setOut(stdout);
     }
 
+    /*
+    Tests the readFile method which reads the input file and detects errors in it
+     */
     @Test
     public void testReadFile(){
-        //the method readFile needs to have a reference to a game with a certain amount of player and a "pack" vector where it stores the cards
+        /*
+        Sets up an instance of the Game class with the few necessary members
+         */
         Game game = new Game();
         game.setNumberOfPlayers(3);
         game.setPack(new Card[3 * 8]);
 
-        //in order to avoid useless logs every time we run the tests, we set the standard output of the process
+        /*
+        Modifies the standard output to avoid error messages on the console every time the testing method runs
+         */
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
-        PrintStream saveOut = System.out;
+        PrintStream saveOut = System.out;       //Backup of the standard output
         System.setOut(printStream);
 
-        //now we can call the method with the various files created and be sure it returns true or false
+        /*
+        Calls the method to be tested
+         */
         assertFalse(game.readFile(cards1.getName()));
         assertFalse(game.readFile(cards2.getName()));
         assertFalse(game.readFile(cards3.getName()));
         assertTrue(game.readFile(cards4.getName()));
 
+        /*
+        Restores standard output
+         */
         System.setOut(saveOut);
     }
 
+    /**
+     * Tests the createPlayersAndDecks method by checking if random elements inside the Players[] and Decks[] arrays are null
+     */
     @Test
     public void testCreatePlayersAndDecks() {
         Game trialGame = new Game();
@@ -231,18 +280,32 @@ public class GameTest {
         assertNotEquals(trialGame.getDecks()[1], null);
     }
 
+    /*
+    Tests the distributeCards method starting from the Game1 object set up in the @Before method of this class
+     */
     @Test
-    public void testDistributeCardsForGame1() {
+    public void testDistributeCardsForGame1() {    //5 players
+
+        /*
+        Calls the method of the Game class to test
+         */
         myTestGame1.distributeCards();
-        //Verifying the length of some random players' hands
+
+        /*
+        Checks the size of some random players' hands
+         */
         assertEquals(4, myTestGame1.getPlayers()[1].getHand().size());
         assertEquals(4, myTestGame1.getPlayers()[0].getHand().size());
 
-        //verifying that some cards in players' hands are equal to 3
+        /*
+        Verifies that some cards in players' hands are equal to 3 (Game1 was set up with a deck of cards with number 3 to simplify)
+         */
         assertEquals(3, myTestGame1.getPlayers()[3].getHand().get(2).getNumber());
         assertEquals(3, myTestGame1.getPlayers()[0].getHand().get(3).getNumber());
 
-        //verifying the same things for the decks
+        /*
+        Same process with the decks
+         */
         assertEquals(4, myTestGame1.getDecks()[0].getCards().size());
         assertEquals(4, myTestGame1.getDecks()[3].getCards().size());
 
@@ -250,18 +313,27 @@ public class GameTest {
         assertEquals(3, myTestGame1.getDecks()[0].getCards().get(3).getNumber());
     }
 
+    /**
+     * Another set of test equal to the previous method but with a Game object set up to have only 2 players
+     */
     @Test
-    public void testDistributeCardsForGame2(){  //2 players
+    public void testDistributeCardsForGame2(){
         myTestGame2.distributeCards();
-        //Verifying the length of some random players' hands
+        /*
+        Verifies the size of some random players' hands
+         */
         assertEquals(4, myTestGame2.getPlayers()[1].getHand().size());
         assertEquals(4, myTestGame2.getPlayers()[0].getHand().size());
 
-        //verifying that some cards in players' hands are equal to 8
+        /*
+        Verifies that some cards in players' hands are equal to 8
+         */
         assertEquals(8, myTestGame2.getPlayers()[1].getHand().get(2).getNumber());
         assertEquals(8, myTestGame2.getPlayers()[0].getHand().get(3).getNumber());
 
-        //verifying the same things for the decks
+        /*
+        Verifies the same things for the decks
+         */
         assertEquals(4, myTestGame2.getDecks()[0].getCards().size());
         assertEquals(4, myTestGame2.getDecks()[1].getCards().size());
 
@@ -269,6 +341,10 @@ public class GameTest {
         assertEquals(8, myTestGame2.getDecks()[0].getCards().get(3).getNumber());
     }
 
+    /**
+     * Test method to verify if the testGenerateLog method can write on the file
+     * @throws Exception
+     */
     @Test
     public void testGenerateLog() throws Exception {
         Game game = new Game();
@@ -281,12 +357,13 @@ public class GameTest {
                     " create the file or something went wrong with the generateLog method in the Game class");
             throw new Exception();
         }
-
     }
 
+    /**
+     * After all the tests, delete the files created to set up the tests
+     */
     @AfterClass
     public static void afterClass(){
-        //deleting the file generated
         cards1.delete();
         cards2.delete();
         cards3.delete();
