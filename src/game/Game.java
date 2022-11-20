@@ -14,6 +14,7 @@ public class Game implements GameInterface {
     private CardDeck[] decks;
     //Represent the winner of the game by storing their number.
     private AtomicInteger winner =  new AtomicInteger(0);
+    private Scanner scanner;
 
     /**
      * The main function of the Game.
@@ -32,6 +33,8 @@ public class Game implements GameInterface {
 
         //Creates the array that will store the cards.
         pack = new Card[8*numberOfPlayers];
+        
+        scanner = new Scanner(System.in);
 
         //Sets the input file to the user input.
         askFileName();
@@ -41,6 +44,8 @@ public class Game implements GameInterface {
         while (!readFile(inputFile.getName())){
             askFileName();
         }
+        
+        scanner.close();
 
         //Creates the player and deck classes.
         createPlayersAndDecks();
@@ -104,7 +109,6 @@ public class Game implements GameInterface {
      * is inputted.
      */
     public void askFileName(){
-        Scanner scanner = new Scanner(System.in);
         try{
             while (true) {
                 System.out.println("Please enter location of pack to load:");
@@ -128,7 +132,6 @@ public class Game implements GameInterface {
         } catch (NoSuchElementException e) {
             System.out.println(e);
         }
-        scanner.close();
     }
 
     /**
