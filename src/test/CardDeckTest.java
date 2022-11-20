@@ -8,16 +8,26 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+/**
+ * Class providing the methods to test the CardDeck class
+ */
 public class CardDeckTest {
 
     CardDeckInterface cardDeck;
 
+    /**
+     * Creates a random CardDeck to work on with the test methods
+     */
     @Before
     public void createDeck(){
         LinkedList<Card> cardList = new LinkedList<>(List.of(new Card(10), new Card(5), new Card(4), new Card(9)));
         cardDeck = new CardDeck(2, cardList);
     }
 
+    /**
+     * Starting from the deck set up in the @Before method, it retrieves 2 cards and
+     * checks the number of cards remaining and the number of the retrieved card
+     */
     @Test
     public void testRetrieveTopCard() {
         Card topCard = cardDeck.retrieveTopCard();
@@ -30,6 +40,10 @@ public class CardDeckTest {
 
     }
 
+    /**
+     * Starting from the deck set up in the @Before method, it adds 2 cards and
+     * checks the total number of cards and the presence of the new card in the deck
+     */
     @Test
     public void testGiveCard() {
         cardDeck.giveCard(new Card(3));
@@ -41,6 +55,9 @@ public class CardDeckTest {
         assertEquals(6, cardDeck.getCards().size());
     }
 
+    /**
+     * Test on empty and non-empty decks
+     */
     @Test
     public void testIsNotEmpty(){
         CardDeck cardDeck = new CardDeck(1, new LinkedList<>(List.of(new Card(3))));
@@ -49,6 +66,9 @@ public class CardDeckTest {
         assertFalse(cardDeck.isNotEmpty());
     }
 
+    /**
+     * Tests if the conversion into String works properly
+     */
     @Test
     public void testGetCardsString(){
         CardDeck cardDeck = new CardDeck(1, new LinkedList<>(List.of(new Card(3), new Card(4), new Card(5))));
