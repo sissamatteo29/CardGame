@@ -89,6 +89,7 @@ public class Game implements GameInterface {
                 //Checks that the player number is higher than 1.
                 if (number > 1) {
                     numberOfPlayers = number;
+                    System.out.println("The game will have " + numberOfPlayers + " players!");
                     break;
                 } else {
                     System.out.println("Number of players must be more than 1.");
